@@ -1,0 +1,29 @@
+### Gradle ###
+.gradle/
+build/
+repo/
+
+### IDE ###
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+out/
+.classpath
+.project
+.settings/
+bin/
+
+### Minecraft development runs ###
+run/
+src/generated/**/.cache/
+
+### Local Blockbench iterations ###
+blockbench/checkpoints/
+blockbench/rebuild_export*/
+blockbench/user_*_export*/
+
+### Operating systems ###
+.DS_Store
+Thumbs.db

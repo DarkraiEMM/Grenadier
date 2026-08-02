@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NTN",
+    "NNN"
+  ],
+  "key": {
+    "N": { "item": "minecraft:iron_nugget" },
+    "T": { "item": "minecraft:tnt" }
+  },
+  "result": {
+    "id": "grenadier:frag_grenade",
+    "count": 2
+  }
+}

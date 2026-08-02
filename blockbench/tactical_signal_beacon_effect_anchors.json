@@ -1,0 +1,45 @@
+{
+  "beam_bounds": {
+    "from": [
+      5,
+      14,
+      5
+    ],
+    "to": [
+      11,
+      "infinite",
+      11
+    ]
+  },
+  "anchors": {
+    "beam_anchor": [
+      8,
+      14,
+      8
+    ],
+    "smoke_north": [
+      8,
+      14.1,
+      4.5
+    ],
+    "smoke_south": [
+      8,
+      14.1,
+      11.5
+    ],
+    "smoke_west": [
+      4.5,
+      14.1,
+      8
+    ],
+    "smoke_east": [
+      11.5,
+      14.1,
+      8
+    ]
+  },
+  "notes": [
+    "Runtime-only metadata; it is not exported as static geometry.",
+    "Dye changes beam, smoke, and dynamic emitter overlay only; casing stays olive."
+  ]
+}

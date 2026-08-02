@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " N ",
+    "GFG",
+    " B "
+  ],
+  "key": {
+    "N": { "item": "minecraft:iron_nugget" },
+    "G": { "item": "minecraft:gunpowder" },
+    "F": { "item": "minecraft:fire_charge" },
+    "B": { "item": "minecraft:glass_bottle" }
+  },
+  "result": {
+    "id": "grenadier:incendiary_grenade",
+    "count": 1
+  }
+}

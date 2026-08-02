@@ -1,0 +1,12 @@
+{
+  "block.grenadier.rally_core": "舊版賽事核心",
+  "block.grenadier.tactical_signal_beacon": "信號機",
+  "block.grenadier.signal_smoke_marker": "舊版信號煙霧",
+  "item.grenadier.signal_flare": "煙霧彈",
+  "item.grenadier.incendiary_grenade": "燃燒彈",
+  "item.grenadier.flashbang": "閃光彈",
+  "item.grenadier.frag_grenade": "破片手榴彈",
+  "itemGroup.grenadier": "擲彈兵",
+  "message.grenadier.signal_color_changed": "信號機顏色已更改。",
+  "message.grenadier.signal_cooling_down": "信號機冷卻中，剩餘 %s 秒。"
+}

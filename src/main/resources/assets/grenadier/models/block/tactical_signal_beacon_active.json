@@ -1,0 +1,7 @@
+{
+  "parent": "grenadier:block/tactical_signal_beacon_base",
+  "textures": {
+    "0": "grenadier:block/tactical_signal_beacon_olive_active",
+    "particle": "#0"
+  }
+}

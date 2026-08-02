@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " N ",
+    "GSG",
+    " P "
+  ],
+  "key": {
+    "N": { "item": "minecraft:iron_nugget" },
+    "G": { "item": "minecraft:gunpowder" },
+    "S": { "item": "minecraft:glowstone_dust" },
+    "P": { "item": "minecraft:glass_pane" }
+  },
+  "result": {
+    "id": "grenadier:flashbang",
+    "count": 1
+  }
+}

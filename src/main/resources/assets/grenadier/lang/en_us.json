@@ -1,0 +1,12 @@
+{
+  "block.grenadier.rally_core": "Legacy Rally Core",
+  "block.grenadier.tactical_signal_beacon": "Signal Beacon",
+  "block.grenadier.signal_smoke_marker": "Legacy Signal Smoke",
+  "item.grenadier.signal_flare": "Smoke Grenade",
+  "item.grenadier.incendiary_grenade": "Incendiary Grenade",
+  "item.grenadier.flashbang": "Flashbang",
+  "item.grenadier.frag_grenade": "Fragmentation Grenade",
+  "itemGroup.grenadier": "Grenadier",
+  "message.grenadier.signal_color_changed": "Signal color changed.",
+  "message.grenadier.signal_cooling_down": "Signal beacon is cooling down: %s seconds remaining."
+}

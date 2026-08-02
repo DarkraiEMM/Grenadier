@@ -1,0 +1,12 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "grenadier:smoke_volume",
+      "in": "minecraft:main",
+      "clear": false
+    }
+  ],
+  "renderStage": "after_weather",
+  "priority": 900
+}

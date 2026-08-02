@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NPN",
+    "CGC",
+    "NPN"
+  ],
+  "key": {
+    "N": { "item": "minecraft:iron_nugget" },
+    "P": { "item": "minecraft:paper" },
+    "C": { "tag": "minecraft:coals" },
+    "G": { "item": "minecraft:gunpowder" }
+  },
+  "result": {
+    "id": "grenadier:signal_flare",
+    "count": 2
+  }
+}

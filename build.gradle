@@ -1,0 +1,113 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id 'idea'
+}
+
+version = project.mod_version
+group = 'com.grenadier'
+
+base {
+    archivesName = 'grenadier'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets.main.resources {
+    srcDir('src/generated/resources')
+    exclude('**/*.bbmodel')
+    exclude('src/generated/**/.cache')
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
+}
+
+neoForge {
+    version = project.neo_version
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+    runs {
+        grenadierClient {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'grenadier'
+        }
+        grenadierServer {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'grenadier'
+        }
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'grenadier'
+        }
+    }
+    mods {
+        grenadier {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    compileOnly("foundry.veil:veil-neoforge-${project.minecraft_version}:${project.veil_version}") {
+        transitive = false
+    }
+    localRuntime("foundry.veil:veil-neoforge-${project.minecraft_version}:${project.veil_version}") {
+        transitive = false
+    }
+    testImplementation platform('org.junit:junit-bom:5.10.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'org.junit.platform:junit-platform-console-standalone:1.10.3'
+}
+
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def replaceProperties = [
+            minecraft_version      : project.minecraft_version,
+            minecraft_version_range: project.minecraft_version_range,
+            neo_version            : project.neo_version,
+            loader_version_range   : project.loader_version_range,
+            mod_version            : project.mod_version,
+            veil_version           : project.veil_version
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('test', Test).configure {
+    enabled = false
+}
+
+tasks.register('automationTest', JavaExec) {
+    group = 'verification'
+    description = 'Runs Grenadier automation tests with the JUnit Platform console.'
+    dependsOn tasks.named('testClasses')
+    classpath = files(sourceSets.test.output, sourceSets.main.output, sourceSets.test.runtimeClasspath)
+    systemProperty 'test.projectDir', project.projectDir.absolutePath
+    mainClass = 'org.junit.platform.console.ConsoleLauncher'
+    args '--scan-class-path', '--details', 'summary', '--disable-ansi-colors'
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('automationTest')
+}
