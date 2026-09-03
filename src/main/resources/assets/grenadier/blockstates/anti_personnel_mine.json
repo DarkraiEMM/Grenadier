@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "soft_ground=false": {
+      "model": "grenadier:block/anti_personnel_mine"
+    },
+    "soft_ground=true": {
+      "model": "grenadier:block/anti_personnel_mine_buried"
+    }
+  }
+}

@@ -16,4 +16,8 @@ public record SmokeCascade(
     public boolean active() {
         return this.dropDistance >= 2.5F;
     }
+
+    public boolean verticalAirburst() {
+        return this.active() && this.edgeDistance <= 0.05F;
+    }
 }

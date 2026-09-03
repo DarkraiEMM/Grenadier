@@ -1,5 +1,6 @@
 package com.grenadier.flashbang;
 
+import com.grenadier.GrenadierConfig;
 import com.grenadier.GrenadierMod;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -14,10 +15,6 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class FlashbangProjectile extends ThrowableItemProjectile {
-    private static final int FUSE_TICKS = 30;
-    private static final double RESTITUTION = 0.22D;
-    private static final double TANGENTIAL_DAMPING = 0.68D;
-
     private int fuseAge;
     private boolean detonated;
 
@@ -41,7 +38,7 @@ public final class FlashbangProjectile extends ThrowableItemProjectile {
             return;
         }
         this.fuseAge++;
-        if (this.fuseAge >= FUSE_TICKS) {
+        if (this.fuseAge >= GrenadierConfig.FLASHBANG_FUSE_TICKS.get()) {
             this.detonate(serverLevel);
         }
     }
@@ -58,7 +55,7 @@ public final class FlashbangProjectile extends ThrowableItemProjectile {
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
         if (!this.detonated) {
-            this.setDeltaMovement(this.getDeltaMovement().scale(-0.28D));
+            this.setDeltaMovement(this.getDeltaMovement().scale(-GrenadierConfig.FLASHBANG_RESTITUTION.get()));
             this.hasImpulse = true;
         }
     }
@@ -77,12 +74,14 @@ public final class FlashbangProjectile extends ThrowableItemProjectile {
 
     private void bounce(Direction normal, Vec3 contact) {
         Vec3 velocity = this.getDeltaMovement();
+        double restitution = GrenadierConfig.FLASHBANG_RESTITUTION.get();
+        double tangentialDamping = GrenadierConfig.FLASHBANG_TANGENTIAL_DAMPING.get();
         double x = normal.getAxis() == Direction.Axis.X
-                ? -velocity.x * RESTITUTION : velocity.x * TANGENTIAL_DAMPING;
+                ? -velocity.x * restitution : velocity.x * tangentialDamping;
         double y = normal.getAxis() == Direction.Axis.Y
-                ? -velocity.y * RESTITUTION : velocity.y * TANGENTIAL_DAMPING;
+                ? -velocity.y * restitution : velocity.y * tangentialDamping;
         double z = normal.getAxis() == Direction.Axis.Z
-                ? -velocity.z * RESTITUTION : velocity.z * TANGENTIAL_DAMPING;
+                ? -velocity.z * restitution : velocity.z * tangentialDamping;
         this.setDeltaMovement(x, y, z);
         this.setPos(contact.add(normal.getStepX() * 0.04D, normal.getStepY() * 0.04D, normal.getStepZ() * 0.04D));
         this.hasImpulse = true;

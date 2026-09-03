@@ -210,7 +210,7 @@ void main() {
         }
         vec3 center = anchor + vec3(
             0.0,
-            radius * mix(0.30, 0.18, cascadeAmount),
+            radius * mix(0.30, 0.18, cascadeAmount) - cascade.w,
             0.0
         );
         vec3 ellipsoidRadii = mix(

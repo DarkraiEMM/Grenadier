@@ -6,7 +6,14 @@
   "item.grenadier.incendiary_grenade": "燃燒彈",
   "item.grenadier.flashbang": "閃光彈",
   "item.grenadier.frag_grenade": "破片手榴彈",
+  "item.grenadier.impact_grenade": "衝擊手榴彈",
   "itemGroup.grenadier": "擲彈兵",
   "message.grenadier.signal_color_changed": "信號機顏色已更改。",
-  "message.grenadier.signal_cooling_down": "信號機冷卻中，剩餘 %s 秒。"
+  "message.grenadier.signal_cooling_down": "信號機冷卻中，剩餘 %s 秒。",
+  "block.grenadier.anti_personnel_mine": "反步兵地雷",
+  "item.grenadier.anti_personnel_mine": "反步兵地雷",
+  "block.grenadier.directional_fragmentation_mine": "定向破片地雷",
+  "item.grenadier.directional_fragmentation_mine": "定向破片地雷",
+  "block.grenadier.thermite_mine": "熱熔地雷",
+  "item.grenadier.thermite_mine": "熱熔地雷"
 }

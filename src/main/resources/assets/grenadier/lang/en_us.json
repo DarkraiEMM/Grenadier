@@ -6,7 +6,14 @@
   "item.grenadier.incendiary_grenade": "Incendiary Grenade",
   "item.grenadier.flashbang": "Flashbang",
   "item.grenadier.frag_grenade": "Fragmentation Grenade",
+  "item.grenadier.impact_grenade": "Impact Grenade",
   "itemGroup.grenadier": "Grenadier",
   "message.grenadier.signal_color_changed": "Signal color changed.",
-  "message.grenadier.signal_cooling_down": "Signal beacon is cooling down: %s seconds remaining."
+  "message.grenadier.signal_cooling_down": "Signal beacon is cooling down: %s seconds remaining.",
+  "block.grenadier.anti_personnel_mine": "Anti-Personnel Mine",
+  "item.grenadier.anti_personnel_mine": "Anti-Personnel Mine",
+  "block.grenadier.directional_fragmentation_mine": "Directional Fragmentation Mine",
+  "item.grenadier.directional_fragmentation_mine": "Directional Fragmentation Mine",
+  "block.grenadier.thermite_mine": "Thermite Mine",
+  "item.grenadier.thermite_mine": "Thermite Mine"
 }

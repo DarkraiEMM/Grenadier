@@ -63,7 +63,7 @@ public final class SmokeCloudService {
                 ? SmokeCascadeDetector.detect(level, center, radius)
                 : SmokeCascade.NONE;
         SmokeCloud cloud = new SmokeCloud(UUID.randomUUID(), level.dimension(), center,
-                radius, 1.0D, now,
+                radius, GrenadierConfig.SMOKE_DENSITY.get(), now,
                 now + GrenadierConfig.DURATION_SECONDS.get() * 20L, color, cascade);
         Deque<SmokeCloud> dimensionClouds = this.clouds.computeIfAbsent(level.dimension(), ignored -> new ArrayDeque<>());
         dimensionClouds.addLast(cloud);
@@ -254,11 +254,11 @@ public final class SmokeCloudService {
         long gameTime = mob.level().getGameTime();
         for (SmokeCloud cloud : active) {
             double radius = cloud.effectiveRadius(gameTime);
-            if (segmentIntersectsMainBody(start, end, cloud, radius)) {
+            double progress = cloud.deployProgress(gameTime);
+            if (segmentIntersectsMainBody(start, end, cloud, radius, progress)) {
                 return true;
             }
             if (cloud.cascade().active()) {
-                double progress = cloud.deployProgress(gameTime);
                 double drop = cloud.cascade().dropDistance() * progress;
                 if (segmentIntersectsCascade(start, end, cloud, progress, drop, radius)) {
                     return true;
@@ -270,13 +270,13 @@ public final class SmokeCloudService {
 
     private boolean pointInsideCloud(Vec3 point, SmokeCloud cloud, long gameTime) {
         double radius = cloud.effectiveRadius(gameTime);
-        if (pointInsideMainBody(point, cloud, radius)) {
+        double progress = cloud.deployProgress(gameTime);
+        if (pointInsideMainBody(point, cloud, radius, progress)) {
             return true;
         }
         if (!cloud.cascade().active()) {
             return false;
         }
-        double progress = cloud.deployProgress(gameTime);
         double drop = cloud.cascade().dropDistance() * progress;
         Vec3 edge = cascadeEdge(cloud, progress);
         double width = cloud.cascade().curtainWidth() * progress * 1.20D;
@@ -304,8 +304,8 @@ public final class SmokeCloudService {
         return pointInsideCascadePool(point, poolCenter, cloud.cascade(), poolRadius);
     }
 
-    private static boolean pointInsideMainBody(Vec3 point, SmokeCloud cloud, double radius) {
-        Vec3 center = mainBodyCenter(cloud, radius);
+    private static boolean pointInsideMainBody(Vec3 point, SmokeCloud cloud, double radius, double progress) {
+        Vec3 center = mainBodyCenter(cloud, radius, progress);
         double horizontalRadius = cloud.cascade().active() ? radius * 0.744D : radius;
         double verticalRadius = cloud.cascade().active() ? radius * 0.504D : radius * 0.66D;
         return pointInsideEllipsoid(
@@ -321,9 +321,10 @@ public final class SmokeCloudService {
             Vec3 start,
             Vec3 end,
             SmokeCloud cloud,
-            double radius
+            double radius,
+            double progress
     ) {
-        Vec3 center = mainBodyCenter(cloud, radius);
+        Vec3 center = mainBodyCenter(cloud, radius, progress);
         double horizontalRadius = cloud.cascade().active() ? radius * 0.744D : radius;
         double verticalRadius = cloud.cascade().active() ? radius * 0.504D : radius * 0.66D;
         return SmokeGeometry.segmentIntersectsEllipsoid(
@@ -336,9 +337,12 @@ public final class SmokeCloudService {
         );
     }
 
-    private static Vec3 mainBodyCenter(SmokeCloud cloud, double radius) {
+    private static Vec3 mainBodyCenter(SmokeCloud cloud, double radius, double progress) {
         double verticalOffset = cloud.cascade().active() ? radius * 0.18D : radius * 0.30D;
-        return cloud.center().add(0.0D, verticalOffset, 0.0D);
+        double cascadeDescent = cloud.cascade().active()
+                ? cloud.cascade().dropDistance() * progress
+                : 0.0D;
+        return cloud.center().add(0.0D, verticalOffset - cascadeDescent, 0.0D);
     }
 
     private static Vec3 cascadeEdge(SmokeCloud cloud, double progress) {

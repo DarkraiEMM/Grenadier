@@ -2,6 +2,7 @@ package com.grenadier.incendiary;
 
 import com.grenadier.GrenadierConfig;
 import com.grenadier.GrenadierMod;
+import com.grenadier.util.SurfaceLocator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -93,11 +94,7 @@ public final class IncendiaryFieldEntity extends AreaEffectCloud {
         if (vertical < -1.0D || vertical > 2.75D) {
             return false;
         }
-        double angle = Math.atan2(dz, dx);
-        double seedPhase = this.getId() * 0.37D;
-        double edge = radius * (0.83D + 0.11D * Math.sin(angle * 3.0D + seedPhase)
-                + 0.06D * Math.sin(angle * 5.0D - seedPhase * 0.7D));
-        return dx * dx + dz * dz <= edge * edge;
+        return dx * dx + dz * dz <= radius * radius;
     }
 
     private boolean hasClearPath(ServerLevel level, LivingEntity target) {
@@ -143,19 +140,9 @@ public final class IncendiaryFieldEntity extends AreaEffectCloud {
         return new Vec3(x, y + 0.06D, z);
     }
 
-    private static double findVisualGround(Level level, double x, double originY, double z) {
-        int blockX = Mth.floor(x);
-        int blockZ = Mth.floor(z);
-        int startY = Mth.floor(originY + 2.0D);
-        for (int y = startY; y >= startY - 5; y--) {
-            BlockPos feet = new BlockPos(blockX, y, blockZ);
-            BlockPos below = feet.below();
-            BlockState floor = level.getBlockState(below);
-            if (floor.isFaceSturdy(level, below, Direction.UP)
-                    && level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()) {
-                return y;
-            }
-        }
-        return originY;
+    private double findVisualGround(Level level, double x, double originY, double z) {
+        return SurfaceLocator.findSurfaceBelow(level, new Vec3(x, originY + 2.0D, z), 7.0D, this)
+                .map(point -> point.y)
+                .orElse(originY);
     }
 }

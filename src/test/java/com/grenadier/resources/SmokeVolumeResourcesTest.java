@@ -33,6 +33,9 @@ class SmokeVolumeResourcesTest {
         assertTrue(shader.contains("smoothstep(0.25, 3.50, sceneDistance)"));
         assertFalse(shader.contains("outwardCurve"));
         assertTrue(shader.contains("vec3 edge = anchor"));
+        assertTrue(shader.contains("radius * mix(0.30, 0.18, cascadeAmount) - cascade.w"));
+        assertFalse(shader.contains("airburstDescent"));
+        assertFalse(shader.contains("verticalAirburst ?"));
         assertTrue(shader.contains("transmittance *= 1.0 - cloudAlpha"));
     }
 

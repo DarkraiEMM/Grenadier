@@ -46,8 +46,10 @@ public final class SmokeGrenadeProjectileModel extends HierarchicalModel<SignalF
         root.addOrReplaceChild(
                 "stripe",
                 CubeListBuilder.create()
-                        .texOffs(0, 0).addBox(1.0F, -4.5F, -3.08F, 2.0F, 9.0F, 0.16F)
-                        .texOffs(8, 0).addBox(1.0F, -4.5F, 2.92F, 2.0F, 9.0F, 0.16F),
+                        .texOffs(0, 0).addBox(-4.0F, -1.0F, -3.08F, 8.0F, 2.0F, 0.16F)
+                        .texOffs(0, 3).addBox(-4.0F, -1.0F, 2.92F, 8.0F, 2.0F, 0.16F)
+                        .texOffs(0, 6).addBox(-4.08F, -1.0F, -3.0F, 0.16F, 2.0F, 6.0F)
+                        .texOffs(7, 6).addBox(3.92F, -1.0F, -3.0F, 0.16F, 2.0F, 6.0F),
                 PartPose.ZERO
         );
 

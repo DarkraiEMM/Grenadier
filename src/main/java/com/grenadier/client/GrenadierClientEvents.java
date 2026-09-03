@@ -3,6 +3,7 @@ package com.grenadier.client;
 import com.grenadier.GrenadierMod;
 import com.grenadier.smoke.SmokeGrenadeColors;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -41,6 +42,22 @@ public final class GrenadierClientEvents {
                 GrenadierMod.FRAG_GRENADE_PROJECTILE.get(),
                 FragGrenadeProjectileRenderer::new
         );
+        event.registerEntityRenderer(
+                GrenadierMod.IMPACT_GRENADE_PROJECTILE.get(),
+                ImpactGrenadeProjectileRenderer::new
+        );
+        event.registerEntityRenderer(
+                GrenadierMod.THERMITE_MINE_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 0.42F, false)
+        );
+        event.registerEntityRenderer(
+                GrenadierMod.THERMITE_BURST.get(),
+                NoopRenderer::new
+        );
+        event.registerEntityRenderer(
+                GrenadierMod.DEPLOYED_MINE.get(),
+                DeployedMineRenderer::new
+        );
     }
 
     @SubscribeEvent
@@ -61,6 +78,10 @@ public final class GrenadierClientEvents {
                 FragGrenadeProjectileModel.LAYER_LOCATION,
                 FragGrenadeProjectileModel::createBodyLayer
         );
+        event.registerLayerDefinition(
+                ImpactGrenadeProjectileModel.LAYER_LOCATION,
+                ImpactGrenadeProjectileModel::createBodyLayer
+        );
     }
 
     @SubscribeEvent
@@ -76,6 +97,10 @@ public final class GrenadierClientEvents {
         event.registerSpriteSet(
                 GrenadierMod.INCENDIARY_FLAME.get(),
                 IncendiaryFlameParticle.Provider::new
+        );
+        event.registerSpriteSet(
+                GrenadierMod.THERMITE_SPARK.get(),
+                ThermiteSparkParticle.Provider::new
         );
     }
 

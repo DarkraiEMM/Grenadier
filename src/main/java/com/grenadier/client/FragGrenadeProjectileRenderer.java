@@ -2,26 +2,23 @@ package com.grenadier.client;
 
 import com.grenadier.grenade.FragGrenadeProjectile;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 
 public final class FragGrenadeProjectileRenderer extends EntityRenderer<FragGrenadeProjectile> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
-            "armsrace", "textures/entity/frag_grenade.png"
-    );
-
-    private final FragGrenadeProjectileModel model;
+    private final ItemRenderer itemRenderer;
 
     public FragGrenadeProjectileRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.model = new FragGrenadeProjectileModel(context.bakeLayer(FragGrenadeProjectileModel.LAYER_LOCATION));
+        this.itemRenderer = context.getItemRenderer();
         this.shadowRadius = 0.14F;
     }
 
@@ -33,11 +30,8 @@ public final class FragGrenadeProjectileRenderer extends EntityRenderer<FragGren
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
         poseStack.mulPose(Axis.XP.rotationDegrees((entity.tickCount + partialTicks) * 19.0F));
-        poseStack.scale(-0.68F, -0.68F, 0.68F);
-
-        this.model.setupAnim(entity, 0.0F, 0.0F, entity.tickCount + partialTicks, 0.0F, 0.0F);
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
+        this.itemRenderer.renderStatic(entity.getItem(), ItemDisplayContext.GROUND, packedLight,
+                OverlayTexture.NO_OVERLAY, poseStack, buffer, entity.level(), entity.getId());
 
         poseStack.popPose();
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
@@ -45,6 +39,6 @@ public final class FragGrenadeProjectileRenderer extends EntityRenderer<FragGren
 
     @Override
     public ResourceLocation getTextureLocation(FragGrenadeProjectile entity) {
-        return TEXTURE;
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 }

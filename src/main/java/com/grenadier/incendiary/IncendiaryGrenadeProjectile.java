@@ -1,6 +1,8 @@
 package com.grenadier.incendiary;
 
+import com.grenadier.GrenadierConfig;
 import com.grenadier.GrenadierMod;
+import com.grenadier.util.SurfaceLocator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -14,18 +16,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Optional;
+
 public final class IncendiaryGrenadeProjectile extends ThrowableItemProjectile {
     private static final int ARM_TICKS = 6;
-    private static final int FUSE_TICKS = 36;
-    private static final double RESTITUTION = 0.12D;
-    private static final double TANGENTIAL_DAMPING = 0.58D;
-    private static final int GROUND_SEARCH_DEPTH = 12;
-
     private int fuseAge;
     private boolean deployed;
 
@@ -49,8 +47,8 @@ public final class IncendiaryGrenadeProjectile extends ThrowableItemProjectile {
             return;
         }
         this.fuseAge++;
-        if (this.fuseAge >= FUSE_TICKS) {
-            this.deploy(serverLevel, findGround(serverLevel, this.position()));
+        if (this.fuseAge >= GrenadierConfig.INCENDIARY_FUSE_TICKS.get()) {
+            this.deploy(serverLevel, findGround(serverLevel, this.position()), this.position());
         }
     }
 
@@ -61,7 +59,7 @@ public final class IncendiaryGrenadeProjectile extends ThrowableItemProjectile {
             return;
         }
         if (this.fuseAge >= ARM_TICKS) {
-            this.deploy(serverLevel, findGround(serverLevel, result.getLocation()));
+            this.deploy(serverLevel, findGround(serverLevel, result.getLocation()), result.getLocation());
             return;
         }
         this.bounce(result.getDirection(), result.getLocation());
@@ -74,9 +72,10 @@ public final class IncendiaryGrenadeProjectile extends ThrowableItemProjectile {
             return;
         }
         if (this.fuseAge >= ARM_TICKS) {
-            this.deploy(serverLevel, findGround(serverLevel, result.getEntity().position()));
+            Vec3 impact = result.getEntity().position();
+            this.deploy(serverLevel, findGround(serverLevel, impact), impact);
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().scale(-RESTITUTION));
+            this.setDeltaMovement(this.getDeltaMovement().scale(-GrenadierConfig.INCENDIARY_RESTITUTION.get()));
             this.hasImpulse = true;
         }
     }
@@ -95,22 +94,33 @@ public final class IncendiaryGrenadeProjectile extends ThrowableItemProjectile {
 
     private void bounce(Direction normal, Vec3 contact) {
         Vec3 velocity = this.getDeltaMovement();
+        double restitution = GrenadierConfig.INCENDIARY_RESTITUTION.get();
+        double tangentialDamping = GrenadierConfig.INCENDIARY_TANGENTIAL_DAMPING.get();
         double x = normal.getAxis() == Direction.Axis.X
-                ? -velocity.x * RESTITUTION : velocity.x * TANGENTIAL_DAMPING;
+                ? -velocity.x * restitution : velocity.x * tangentialDamping;
         double y = normal.getAxis() == Direction.Axis.Y
-                ? -velocity.y * RESTITUTION : velocity.y * TANGENTIAL_DAMPING;
+                ? -velocity.y * restitution : velocity.y * tangentialDamping;
         double z = normal.getAxis() == Direction.Axis.Z
-                ? -velocity.z * RESTITUTION : velocity.z * TANGENTIAL_DAMPING;
+                ? -velocity.z * restitution : velocity.z * tangentialDamping;
         this.setDeltaMovement(x, y, z);
         this.setPos(contact.add(normal.getStepX() * 0.04D, normal.getStepY() * 0.04D, normal.getStepZ() * 0.04D));
         this.hasImpulse = true;
     }
 
-    private void deploy(ServerLevel level, Vec3 center) {
+    private void deploy(ServerLevel level, Optional<Vec3> groundedCenter, Vec3 detonationPosition) {
         if (this.deployed) {
             return;
         }
         this.deployed = true;
+        if (groundedCenter.isEmpty()) {
+            level.sendParticles(ParticleTypes.CLOUD, detonationPosition.x, detonationPosition.y, detonationPosition.z,
+                    12, 0.45D, 0.15D, 0.45D, 0.025D);
+            level.playSound(null, detonationPosition.x, detonationPosition.y, detonationPosition.z,
+                    SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.8F, 1.0F);
+            this.discard();
+            return;
+        }
+        Vec3 center = groundedCenter.get();
         if (!level.getFluidState(BlockPos.containing(center)).is(net.minecraft.tags.FluidTags.WATER)) {
             Entity owner = this.getOwner();
             IncendiaryFieldEntity field = new IncendiaryFieldEntity(
@@ -133,19 +143,8 @@ public final class IncendiaryGrenadeProjectile extends ThrowableItemProjectile {
         this.discard();
     }
 
-    private static Vec3 findGround(ServerLevel level, Vec3 origin) {
-        int x = BlockPos.containing(origin).getX();
-        int z = BlockPos.containing(origin).getZ();
-        int startY = BlockPos.containing(origin.add(0.0D, 1.0D, 0.0D)).getY();
-        for (int y = startY; y >= startY - GROUND_SEARCH_DEPTH; y--) {
-            BlockPos feet = new BlockPos(x, y, z);
-            BlockPos below = feet.below();
-            BlockState floor = level.getBlockState(below);
-            if (floor.isFaceSturdy(level, below, Direction.UP)
-                    && level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()) {
-                return new Vec3(origin.x, y + 0.04D, origin.z);
-            }
-        }
-        return origin;
+    private Optional<Vec3> findGround(ServerLevel level, Vec3 origin) {
+        double maxDrop = Math.max(2.0D, origin.y - level.getMinBuildHeight() + 2.0D);
+        return SurfaceLocator.findSurfaceBelow(level, origin.add(0.0D, 1.25D, 0.0D), maxDrop, this);
     }
 }

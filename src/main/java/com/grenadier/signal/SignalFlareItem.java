@@ -5,6 +5,7 @@ import com.grenadier.smoke.SmokeGrenadeColors;
 import com.grenadier.smoke.UseContext;
 import com.grenadier.smoke.UseDecision;
 import com.grenadier.smoke.UsePolicyRegistry;
+import com.grenadier.util.ProjectileLaunch;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -35,6 +36,7 @@ public class SignalFlareItem extends Item {
             }
 
             SignalFlareProjectile projectile = new SignalFlareProjectile(serverLevel, serverPlayer);
+            ProjectileLaunch.placeAtHand(projectile, serverPlayer, hand);
             projectile.setSmokeColor(SmokeGrenadeColors.smokeArgb(stack));
             projectile.setSticky(serverPlayer.isShiftKeyDown());
             projectile.setItem(stack);

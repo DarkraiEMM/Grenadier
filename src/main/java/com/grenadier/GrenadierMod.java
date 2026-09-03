@@ -8,7 +8,19 @@ import com.grenadier.flashbang.FlashbangItem;
 import com.grenadier.flashbang.FlashbangProjectile;
 import com.grenadier.grenade.FragGrenadeItem;
 import com.grenadier.grenade.FragGrenadeProjectile;
+import com.grenadier.grenade.ImpactGrenadeItem;
+import com.grenadier.grenade.ImpactGrenadeProjectile;
 import com.grenadier.network.SmokeNetwork;
+import com.grenadier.mine.AntiPersonnelMineBlock;
+import com.grenadier.mine.AntiPersonnelMineItem;
+import com.grenadier.mine.DirectionalMineBlock;
+import com.grenadier.mine.DirectionalMineItem;
+import com.grenadier.mine.DeployedMineEntity;
+import com.grenadier.mine.MineBlockEntity;
+import com.grenadier.mine.ThermiteBurstEntity;
+import com.grenadier.mine.ThermiteMineBlock;
+import com.grenadier.mine.ThermiteMineItem;
+import com.grenadier.mine.ThermiteMineProjectile;
 import com.grenadier.signal.SignalFlareItem;
 import com.grenadier.signal.SignalFlareProjectile;
 import com.grenadier.signal.SignalSmokeMarkerBlock;
@@ -73,6 +85,15 @@ public final class GrenadierMod {
     public static final DeferredBlock<Block> SIGNAL_SMOKE_MARKER = BLOCKS.registerBlock(
             "signal_smoke_marker", SignalSmokeMarkerBlock::new,
             BlockBehaviour.Properties.of().instabreak().noCollission().noLootTable().sound(SoundType.METAL));
+    public static final DeferredBlock<AntiPersonnelMineBlock> ANTI_PERSONNEL_MINE = BLOCKS.registerBlock(
+            "anti_personnel_mine", AntiPersonnelMineBlock::new,
+            BlockBehaviour.Properties.of().strength(0.35F).noCollission().sound(SoundType.METAL));
+    public static final DeferredBlock<DirectionalMineBlock> DIRECTIONAL_MINE = BLOCKS.registerBlock(
+            "directional_fragmentation_mine", DirectionalMineBlock::new,
+            BlockBehaviour.Properties.of().strength(0.45F).noCollission().sound(SoundType.METAL));
+    public static final DeferredBlock<ThermiteMineBlock> THERMITE_MINE = BLOCKS.registerBlock(
+            "thermite_mine", ThermiteMineBlock::new,
+            BlockBehaviour.Properties.of().strength(0.4F).noCollission().sound(SoundType.METAL));
 
     public static final DeferredItem<Item> RALLY_CORE_ITEM = ITEMS.registerItem(
             "rally_core", properties -> new BlockItem(RALLY_CORE.get(), properties), new Item.Properties().stacksTo(16));
@@ -86,10 +107,24 @@ public final class GrenadierMod {
             "flashbang", FlashbangItem::new, new Item.Properties().stacksTo(16));
     public static final DeferredItem<Item> FRAG_GRENADE = ITEMS.registerItem(
             "frag_grenade", FragGrenadeItem::new, new Item.Properties().stacksTo(16));
+    public static final DeferredItem<Item> IMPACT_GRENADE = ITEMS.registerItem(
+            "impact_grenade", ImpactGrenadeItem::new, new Item.Properties().stacksTo(16));
+    public static final DeferredItem<Item> ANTI_PERSONNEL_MINE_ITEM = ITEMS.registerItem(
+            "anti_personnel_mine", properties -> new AntiPersonnelMineItem(ANTI_PERSONNEL_MINE.get(), properties),
+            new Item.Properties().stacksTo(16));
+    public static final DeferredItem<Item> DIRECTIONAL_MINE_ITEM = ITEMS.registerItem(
+            "directional_fragmentation_mine", properties -> new DirectionalMineItem(DIRECTIONAL_MINE.get(), properties),
+            new Item.Properties().stacksTo(16));
+    public static final DeferredItem<Item> THERMITE_MINE_ITEM = ITEMS.registerItem(
+            "thermite_mine", ThermiteMineItem::new, new Item.Properties().stacksTo(16));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TacticalSignalBeaconBlockEntity>> TACTICAL_SIGNAL_BEACON_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("tactical_signal_beacon",
                     () -> BlockEntityType.Builder.of(TacticalSignalBeaconBlockEntity::new, TACTICAL_SIGNAL_BEACON.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MineBlockEntity>> MINE_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register("mine",
+                    () -> BlockEntityType.Builder.of(MineBlockEntity::new,
+                            ANTI_PERSONNEL_MINE.get(), DIRECTIONAL_MINE.get(), THERMITE_MINE.get()).build(null));
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> COLORED_SIGNAL_SMOKE =
             PARTICLE_TYPES.register("colored_signal_smoke", () -> new ParticleType<ColorParticleOption>(true) {
                 @Override
@@ -116,6 +151,8 @@ public final class GrenadierMod {
             });
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> INCENDIARY_FLAME =
             PARTICLE_TYPES.register("incendiary_flame", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> THERMITE_SPARK =
+            PARTICLE_TYPES.register("thermite_spark", () -> new SimpleParticleType(true));
     public static final DeferredHolder<EntityType<?>, EntityType<SignalFlareProjectile>> SIGNAL_FLARE_PROJECTILE =
             ENTITY_TYPES.register("signal_flare", () -> EntityType.Builder.<SignalFlareProjectile>of(SignalFlareProjectile::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(2)
@@ -140,6 +177,26 @@ public final class GrenadierMod {
                             FragGrenadeProjectile::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(8).updateInterval(2)
                     .build(MODID + ":frag_grenade"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ImpactGrenadeProjectile>> IMPACT_GRENADE_PROJECTILE =
+            ENTITY_TYPES.register("impact_grenade", () -> EntityType.Builder.<ImpactGrenadeProjectile>of(
+                            ImpactGrenadeProjectile::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(8).updateInterval(1)
+                    .build(MODID + ":impact_grenade"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ThermiteMineProjectile>> THERMITE_MINE_PROJECTILE =
+            ENTITY_TYPES.register("thermite_mine_projectile", () -> EntityType.Builder.<ThermiteMineProjectile>of(
+                            ThermiteMineProjectile::new, MobCategory.MISC)
+                    .sized(0.3F, 0.18F).clientTrackingRange(8).updateInterval(2)
+                    .build(MODID + ":thermite_mine_projectile"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ThermiteBurstEntity>> THERMITE_BURST =
+            ENTITY_TYPES.register("thermite_burst", () -> EntityType.Builder.<ThermiteBurstEntity>of(
+                            ThermiteBurstEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(8).updateInterval(5)
+                    .build(MODID + ":thermite_burst"));
+    public static final DeferredHolder<EntityType<?>, EntityType<DeployedMineEntity>> DEPLOYED_MINE =
+            ENTITY_TYPES.register("deployed_mine", () -> EntityType.Builder.<DeployedMineEntity>of(
+                            DeployedMineEntity::new, MobCategory.MISC)
+                    .sized(0.42F, 0.10F).clientTrackingRange(10).updateInterval(2)
+                    .build(MODID + ":deployed_mine"));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register(
             "main", () -> CreativeModeTab.builder()
@@ -151,6 +208,10 @@ public final class GrenadierMod {
                         output.accept(INCENDIARY_GRENADE.get());
                         output.accept(FLASHBANG.get());
                         output.accept(FRAG_GRENADE.get());
+                        output.accept(IMPACT_GRENADE.get());
+                        output.accept(ANTI_PERSONNEL_MINE_ITEM.get());
+                        output.accept(DIRECTIONAL_MINE_ITEM.get());
+                        output.accept(THERMITE_MINE_ITEM.get());
                         output.accept(TACTICAL_SIGNAL_BEACON_ITEM.get());
                     }).build());
 
@@ -177,13 +238,17 @@ public final class GrenadierMod {
     }
 
     private static void registerLegacyAliases() {
-        addLegacyAliases(BLOCKS, "rally_core", "tactical_signal_beacon", "signal_smoke_marker");
+        addLegacyAliases(BLOCKS, "rally_core", "tactical_signal_beacon", "signal_smoke_marker",
+                "anti_personnel_mine", "directional_fragmentation_mine", "thermite_mine");
         addLegacyAliases(ITEMS, "rally_core", "tactical_signal_beacon", "signal_flare",
-                "incendiary_grenade", "flashbang", "frag_grenade");
-        addLegacyAliases(BLOCK_ENTITY_TYPES, "tactical_signal_beacon");
-        addLegacyAliases(PARTICLE_TYPES, "colored_signal_smoke", "ground_smoke_sheet", "incendiary_flame");
+                "incendiary_grenade", "flashbang", "frag_grenade", "impact_grenade",
+                "anti_personnel_mine", "directional_fragmentation_mine", "thermite_mine");
+        addLegacyAliases(BLOCK_ENTITY_TYPES, "tactical_signal_beacon", "mine");
+        addLegacyAliases(PARTICLE_TYPES, "colored_signal_smoke", "ground_smoke_sheet", "incendiary_flame",
+                "thermite_spark");
         addLegacyAliases(ENTITY_TYPES, "signal_flare", "incendiary_grenade", "incendiary_field",
-                "flashbang", "frag_grenade");
+                "flashbang", "frag_grenade", "impact_grenade", "thermite_mine_projectile", "thermite_burst",
+                "deployed_mine");
         CREATIVE_MODE_TABS.addAlias(
                 ResourceLocation.fromNamespaceAndPath(SMOKE_GRENADE_LEGACY_NAMESPACE, "main"),
                 path("main"));

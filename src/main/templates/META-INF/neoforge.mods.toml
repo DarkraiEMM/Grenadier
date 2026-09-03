@@ -6,8 +6,12 @@ license="All Rights Reserved"
 modId="grenadier"
 version="${mod_version}"
 displayName="掷弹兵"
+authors="DarkraiEMM"
+displayURL="https://github.com/DarkraiEMM/Grenadier"
+issueTrackerURL="https://github.com/DarkraiEMM/Grenadier/issues"
+logoFile="grenadier.png"
 description='''
-Adds tactical throwable items, reusable signal beacons, smoke concealment AI, and shared server rule hooks.
+Adds tactical grenades, deployable mines, volumetric smoke concealment, and a reusable signal beacon.
 '''
 
 [[mixins]]

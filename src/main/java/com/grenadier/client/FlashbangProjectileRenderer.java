@@ -1,5 +1,6 @@
 package com.grenadier.client;
 
+import com.grenadier.GrenadierMod;
 import com.grenadier.flashbang.FlashbangProjectile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +15,7 @@ import net.minecraft.util.Mth;
 
 public final class FlashbangProjectileRenderer extends EntityRenderer<FlashbangProjectile> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
-            "armsrace", "textures/entity/flashbang.png"
+            GrenadierMod.MODID, "textures/entity/flashbang.png"
     );
 
     private final FlashbangProjectileModel model;

@@ -139,7 +139,7 @@ public final class SmokeVolumeClientEvents {
                 ClientSmokeVolumeManager.RenderedSmoke smoke = smokes.get(i);
                 Vec3 relative = smoke.center().subtract(camera);
                 spheres[i] = new Vector4f((float) relative.x, (float) relative.y, (float) relative.z, smoke.radius());
-                colors[i] = colorAndDensity(smoke.data().color());
+                colors[i] = colorAndDensity(smoke.data().color(), smoke.data().density());
                 long seedBits = smoke.data().id().getMostSignificantBits() ^ smoke.data().id().getLeastSignificantBits();
                 float angle = (seedBits & 0xFFFFL) / 65535.0F * (float) (Math.PI * 2.0D);
                 float deployScale = smoke.data().radius() <= 0.0F ? 1.0F : smoke.radius() / smoke.data().radius();
@@ -147,7 +147,7 @@ public final class SmokeVolumeClientEvents {
                 cascades[i] = new Vector4f(
                         smoke.data().cascadeDirectionX(),
                         smoke.data().cascadeDirectionZ(),
-                        smoke.data().cascadeEdgeDistance() * deployScale,
+                        smoke.data().cascadeEdgeDistance(),
                         smoke.data().cascadeDropDistance() * deployScale
                 );
                 cascadeShapes[i] = new Vector4f(
@@ -182,7 +182,7 @@ public final class SmokeVolumeClientEvents {
         return volumeActive;
     }
 
-    private static Vector4f colorAndDensity(int argb) {
+    private static Vector4f colorAndDensity(int argb, float density) {
         float red = ((argb >> 16) & 0xFF) / 255.0F;
         float green = ((argb >> 8) & 0xFF) / 255.0F;
         float blue = (argb & 0xFF) / 255.0F;
@@ -192,7 +192,7 @@ public final class SmokeVolumeClientEvents {
         red = neutralBase + (red - luminance) * saturation;
         green = neutralBase + (green - luminance) * saturation;
         blue = neutralBase + (blue - luminance) * saturation;
-        return new Vector4f(red, green, blue, 0.78F);
+        return new Vector4f(red, green, blue, density);
     }
 
     private static void spawnLocalParticles(Minecraft minecraft, boolean volumeMode) {
@@ -209,6 +209,10 @@ public final class SmokeVolumeClientEvents {
             int particleColor = (volumeMode ? 0x90000000 : 0xE8000000) | (smoke.data().color() & 0xFFFFFF);
             ColorParticleOption particle = ColorParticleOption.create(
                     com.grenadier.GrenadierMod.COLORED_SIGNAL_SMOKE.get(), particleColor);
+            boolean cascading = smoke.data().cascadeDropDistance() >= 2.5F;
+            double bodyDescent = cascading
+                    ? smoke.data().cascadeDropDistance() * smoke.radius() / smoke.data().radius()
+                    : 0.0D;
             for (int i = 0; i < countPerCloud; i++) {
                 double angle = minecraft.level.random.nextDouble() * Math.PI * 2.0D;
                 double radialFraction = volumeMode
@@ -218,7 +222,7 @@ public final class SmokeVolumeClientEvents {
                 double x = smoke.center().x + Math.cos(angle) * horizontalRadius;
                 double z = smoke.center().z + Math.sin(angle) * horizontalRadius;
                 double yFraction = minecraft.level.random.nextDouble() * 1.55D - 0.62D;
-                double y = smoke.center().y + yFraction * smoke.radius() * 0.72D;
+                double y = smoke.center().y - bodyDescent + yFraction * smoke.radius() * 0.72D;
                 double inward = volumeMode ? -0.008D : 0.0D;
                 double xSpeed = Math.cos(angle) * inward;
                 double zSpeed = Math.sin(angle) * inward;

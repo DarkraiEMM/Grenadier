@@ -23,9 +23,9 @@ final class SmokeCascadeDetector {
         if (verticalDrop >= 2.5D) {
             double curtainWidth = Math.min(
                     SmokeCascade.MAX_CURTAIN_WIDTH,
-                    Math.max(2.0D, radius * 1.35D)
+                    Math.max(2.0D, radius * 1.98D)
             );
-            double poolRadius = poolRadius(radius, curtainWidth, verticalDrop);
+            double poolRadius = poolRadius(radius, curtainWidth, verticalDrop, true);
             return new SmokeCascade(
                     1.0F,
                     0.0F,
@@ -104,7 +104,7 @@ final class SmokeCascadeDetector {
                 SmokeCascade.MAX_CURTAIN_WIDTH,
                 Math.max(radius * 0.38D, (last - first + 1) * spacing)
         );
-        double poolRadius = poolRadius(radius, curtainWidth, representativeDrop);
+        double poolRadius = poolRadius(radius, curtainWidth, representativeDrop, false);
         return new SmokeCascade(
                 (float) bestDirectionX,
                 (float) bestDirectionZ,
@@ -150,10 +150,12 @@ final class SmokeCascadeDetector {
         return SmokeCascade.MAX_DROP;
     }
 
-    private static double poolRadius(double radius, double curtainWidth, double drop) {
+    private static double poolRadius(double radius, double curtainWidth, double drop, boolean verticalAirburst) {
+        double minimumRadius = verticalAirburst ? radius * 0.82D : radius * 0.20D;
+        double widthContribution = curtainWidth * (verticalAirburst ? 0.44D : 0.32D);
         return Math.min(
                 SmokeCascade.MAX_POOL_RADIUS,
-                Math.max(radius * 0.20D, curtainWidth * 0.32D + drop * 0.035D)
+                Math.max(minimumRadius, widthContribution + drop * 0.035D)
         );
     }
 }

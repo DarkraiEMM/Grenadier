@@ -27,22 +27,32 @@ class SmokeVolumeDataTest {
     }
 
     @Test
+    void rejectsInvalidDensity() {
+        SmokeVolumeData invalid = new SmokeVolumeData(
+                UUID.randomUUID(), 0.0D, 64.0D, 0.0D, 9.0F,
+                0xFF4C504C, SmokeVolumeData.MAX_DENSITY + 0.01F, 100L, 500L, 30,
+                0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F
+        );
+        assertFalse(invalid.valid());
+    }
+
+    @Test
     void validatesCascadeBoundsAndDirection() {
         SmokeVolumeData validCascade = new SmokeVolumeData(
                 UUID.randomUUID(), 0.0D, 64.0D, 0.0D, 9.0F,
-                0xFF4C504C, 100L, 500L, 30,
+                0xFF4C504C, 0.78F, 100L, 500L, 30,
                 1.0F, 0.0F, 6.0F, 8.0F, 7.0F, 4.5F
         );
         SmokeVolumeData invalidCascade = new SmokeVolumeData(
                 UUID.randomUUID(), 0.0D, 64.0D, 0.0D, 9.0F,
-                0xFF4C504C, 100L, 500L, 30,
+                0xFF4C504C, 0.78F, 100L, 500L, 30,
                 0.0F, 0.0F, 6.0F, 8.0F, 7.0F, 4.5F
         );
         assertTrue(validCascade.valid());
         assertFalse(invalidCascade.valid());
         SmokeVolumeData invalidCurtain = new SmokeVolumeData(
                 UUID.randomUUID(), 0.0D, 64.0D, 0.0D, 9.0F,
-                0xFF4C504C, 100L, 500L, 30,
+                0xFF4C504C, 0.78F, 100L, 500L, 30,
                 1.0F, 0.0F, 6.0F, 8.0F, 0.25F, 4.5F
         );
         assertFalse(invalidCurtain.valid());
@@ -64,7 +74,7 @@ class SmokeVolumeDataTest {
             double x
     ) {
         return new SmokeVolumeData(UUID.randomUUID(), x, 64.0D, 0.0D, radius,
-                0xFF4C504C, created, expires, deployTicks,
+                0xFF4C504C, 0.78F, created, expires, deployTicks,
                 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
     }
 }

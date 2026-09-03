@@ -4,6 +4,7 @@ import com.grenadier.GrenadierMod;
 import com.grenadier.smoke.UseContext;
 import com.grenadier.smoke.UseDecision;
 import com.grenadier.smoke.UsePolicyRegistry;
+import com.grenadier.util.ProjectileLaunch;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -34,6 +35,7 @@ public final class IncendiaryGrenadeItem extends Item {
             }
 
             IncendiaryGrenadeProjectile projectile = new IncendiaryGrenadeProjectile(serverLevel, serverPlayer);
+            ProjectileLaunch.placeAtHand(projectile, serverPlayer, hand);
             projectile.setItem(stack);
             projectile.shootFromRotation(serverPlayer, serverPlayer.getXRot(), serverPlayer.getYRot(),
                     0.0F, 1.10F, 0.45F);

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " N ",
+    "NTN",
+    " P "
+  ],
+  "key": {
+    "N": { "item": "minecraft:iron_nugget" },
+    "T": { "item": "minecraft:tnt" },
+    "P": { "item": "minecraft:stone_pressure_plate" }
+  },
+  "result": {
+    "id": "grenadier:impact_grenade",
+    "count": 2
+  }
+}

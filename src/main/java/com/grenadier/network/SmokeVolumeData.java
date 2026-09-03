@@ -12,6 +12,7 @@ public record SmokeVolumeData(
         double z,
         float radius,
         int color,
+        float density,
         long createdGameTime,
         long expiresGameTime,
         int deployTicks,
@@ -24,6 +25,7 @@ public record SmokeVolumeData(
 ) {
     public static final int MAX_SNAPSHOT_SMOKES = 24;
     public static final float MAX_RADIUS = 32.0F;
+    public static final float MAX_DENSITY = 2.0F;
     public static final int MAX_DEPLOY_TICKS = 20 * 30;
     public static final long MAX_LIFETIME_TICKS = 20L * 60L * 10L;
 
@@ -35,6 +37,7 @@ public record SmokeVolumeData(
                 cloud.center().z,
                 (float) cloud.radius(),
                 cloud.color(),
+                (float) cloud.density(),
                 cloud.createdGameTime(),
                 cloud.expiresGameTime(),
                 deployTicks,
@@ -76,6 +79,9 @@ public record SmokeVolumeData(
                 && Float.isFinite(this.radius)
                 && this.radius > 0.0F
                 && this.radius <= MAX_RADIUS
+                && Float.isFinite(this.density)
+                && this.density > 0.0F
+                && this.density <= MAX_DENSITY
                 && this.deployTicks >= 0
                 && this.deployTicks <= MAX_DEPLOY_TICKS
                 && lifetime > 0L
@@ -94,6 +100,7 @@ public record SmokeVolumeData(
         buffer.writeDouble(data.z);
         buffer.writeFloat(data.radius);
         buffer.writeInt(data.color);
+        buffer.writeFloat(data.density);
         buffer.writeVarLong(data.createdGameTime);
         buffer.writeVarLong(data.expiresGameTime);
         buffer.writeVarInt(data.deployTicks);
@@ -113,6 +120,7 @@ public record SmokeVolumeData(
                 buffer.readDouble(),
                 buffer.readFloat(),
                 buffer.readInt(),
+                buffer.readFloat(),
                 buffer.readVarLong(),
                 buffer.readVarLong(),
                 buffer.readVarInt(),

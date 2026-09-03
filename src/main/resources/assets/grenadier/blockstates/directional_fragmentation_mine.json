@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "grenadier:block/directional_fragmentation_mine"
+    },
+    "facing=east": {
+      "model": "grenadier:block/directional_fragmentation_mine",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "grenadier:block/directional_fragmentation_mine",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "grenadier:block/directional_fragmentation_mine",
+      "y": 270
+    }
+  }
+}

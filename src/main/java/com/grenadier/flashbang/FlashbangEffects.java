@@ -57,7 +57,9 @@ public final class FlashbangEffects {
         double facingDot = target.getViewVector(1.0F).dot(towardFlash);
         double facingFactor = Mth.clamp((facingDot + 0.35D) / 1.0D, 0.18D, 1.0D);
         double closeFactor = Mth.clamp(1.0D - distance / 4.0D, 0.0D, 1.0D) * 0.72D;
-        return Mth.clamp(Math.pow(distanceFactor, 0.72D) * Math.max(facingFactor, closeFactor) * 1.35D, 0.0D, 1.0D);
+        double strength = GrenadierConfig.FLASHBANG_EFFECT_STRENGTH.get();
+        return Mth.clamp(Math.pow(distanceFactor, 0.72D) * Math.max(facingFactor, closeFactor)
+                * 1.35D * strength, 0.0D, 1.0D);
     }
 
     private static boolean hasClearPath(ServerLevel level, Vec3 center, LivingEntity target, Vec3 eye) {
